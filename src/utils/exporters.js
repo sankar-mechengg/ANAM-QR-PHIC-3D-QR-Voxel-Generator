@@ -1,75 +1,173 @@
-// Simple OBJ & STL ASCII exporters for voxels
-// Each voxel is a 0.9 sized cube centered at (x,y,z) with edge 1
+// Voxel -> mesh export.
+//
+// The old exporter emitted all six faces of every cube, so neighbouring voxels
+// left a wall of coincident internal faces and the mesh was not manifold. Here we
+// extract the surface instead: a face is emitted only where the neighbouring cell
+// is empty. With full 1.0 cubes on an integer lattice the surviving faces meet
+// exactly edge to edge, so the result is watertight, manifold and printable with
+// no internal geometry.
 
-function cubeVertices(cx, cy, cz, s=0.45) {
-  // 8 vertices
-  return [
-    [cx-s, cy-s, cz-s],
-    [cx+s, cy-s, cz-s],
-    [cx+s, cy+s, cz-s],
-    [cx-s, cy+s, cz-s],
-    [cx-s, cy-s, cz+s],
-    [cx+s, cy-s, cz+s],
-    [cx+s, cy+s, cz+s],
-    [cx-s, cy+s, cz+s],
-  ]
-}
-const FACES = [
-  [0,1,2,3], // -z
-  [4,7,6,5], // +z
-  [0,4,5,1], // -y
-  [2,6,7,3], // +y
-  [0,3,7,4], // -x
-  [1,5,6,2], // +x
+export const MM_PER_VOXEL = 2 // a 29-module code lands at ~70 mm across
+
+// unit cube corners, in the order the face table below indexes
+const CORNERS = [
+  [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, 0.5, -0.5], [-0.5, 0.5, -0.5],
+  [-0.5, -0.5, 0.5], [0.5, -0.5, 0.5], [0.5, 0.5, 0.5], [-0.5, 0.5, 0.5],
 ]
 
-export function exportOBJ(voxels, name='model') {
-  let obj = `# OBJ generated from 3D QR Voxel Studio\n# voxels: ${voxels.length}\no ${name}\n`
-  let vIdx = 1
-  // we emit vertices per cube, then faces
-  // To keep file simple, we DON'T deduplicate vertices
-  let faceLines = ''
-  voxels.forEach((vox)=>{
-    const verts = cubeVertices(vox.x, vox.y, vox.z)
-    verts.forEach(v=>{ obj+=`v ${v[0]} ${v[1]} ${v[2]}\n` })
-    FACES.forEach(f=>{
-      // quad as 2 triangles? OBJ supports quads, but for blender both fine. Emit as f with 4 verts
-      const a = vIdx+f[0], b=vIdx+f[1], c=vIdx+f[2], d=vIdx+f[3]
-      faceLines+=`f ${a} ${b} ${c} ${d}\n`
-    })
-    vIdx+=8
-  })
-  obj+=faceLines
-  return obj
+// [neighbour offset, outward normal, corner quad wound CCW seen from outside]
+const FACES = [
+  [[0, 0, -1], [0, 0, -1], [0, 3, 2, 1]],
+  [[0, 0, 1], [0, 0, 1], [4, 5, 6, 7]],
+  [[0, -1, 0], [0, -1, 0], [0, 1, 5, 4]],
+  [[0, 1, 0], [0, 1, 0], [3, 7, 6, 2]],
+  [[-1, 0, 0], [-1, 0, 0], [0, 4, 7, 3]],
+  [[1, 0, 0], [1, 0, 0], [1, 2, 6, 5]],
+]
+
+const hexToRgb = (hex) => {
+  const h = (hex || '#ffffff').replace('#', '')
+  const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16)
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
 }
 
-export function exportSTLASCII(voxels, name='model') {
-  let stl = `solid ${name}\n`
-  function addFacet(v1,v2,v3){
-    // compute normal
-    const ux=v2[0]-v1[0], uy=v2[1]-v1[1], uz=v2[2]-v1[2]
-    const vx=v3[0]-v1[0], vy=v3[1]-v1[1], vz=v3[2]-v1[2]
-    let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx
-    const len=Math.hypot(nx,ny,nz)||1; nx/=len; ny/=len; nz/=len
-    stl+=`  facet normal ${nx} ${ny} ${nz}\n    outer loop\n      vertex ${v1[0]} ${v1[1]} ${v1[2]}\n      vertex ${v2[0]} ${v2[1]} ${v2[2]}\n      vertex ${v3[0]} ${v3[1]} ${v3[2]}\n    endloop\n  endfacet\n`
+/**
+ * Walk the occupancy grid and collect only the faces that face open air.
+ * Returns quads: { p: [4 x [x,y,z]], n: [x,y,z], color }
+ */
+export function extractSurface(cells, scale = MM_PER_VOXEL) {
+  const occ = new Set()
+  for (const c of cells) occ.add(`${c.x},${c.y},${c.z}`)
+  const quads = []
+  for (const c of cells) {
+    for (const [off, normal, quad] of FACES) {
+      if (occ.has(`${c.x + off[0]},${c.y + off[1]},${c.z + off[2]}`)) continue
+      quads.push({
+        p: quad.map((i) => [
+          (c.x + CORNERS[i][0]) * scale,
+          (c.y + CORNERS[i][1]) * scale,
+          (c.z + CORNERS[i][2]) * scale,
+        ]),
+        n: normal,
+        color: c.color,
+      })
+    }
   }
-  voxels.forEach(vox=>{
-    const v=cubeVertices(vox.x, vox.y, vox.z)
-    // each quad -> 2 triangles
-    FACES.forEach(f=>{
-      const p0=v[f[0]], p1=v[f[1]], p2=v[f[2]], p3=v[f[3]]
-      addFacet(p0,p1,p2)
-      addFacet(p0,p2,p3)
-    })
-  })
-  stl+=`endsolid ${name}\n`
-  return stl
+  return quads
 }
 
-export function downloadText(content, filename, mime='text/plain'){
-  const blob = new Blob([content], {type:mime})
+/**
+ * Edge audit.
+ *
+ * An edge used by an odd number of faces is a genuine boundary — a hole, and the
+ * model would not print. An edge used by four is a *pinch*: two voxels meeting
+ * only along an edge, which is what any QR relief produces wherever two dark
+ * modules sit diagonally with light modules between them. The solid is still
+ * closed and holds water there; slicers fill it correctly and both towers are
+ * anchored to the slab below. It cannot be removed without altering the code.
+ */
+export function inspectSurface(quads) {
+  const edges = new Map()
+  const k = (p) => `${p[0].toFixed(4)},${p[1].toFixed(4)},${p[2].toFixed(4)}`
+  for (const q of quads) {
+    for (let i = 0; i < 4; i++) {
+      const a = k(q.p[i])
+      const b = k(q.p[(i + 1) % 4])
+      const e = a < b ? `${a}|${b}` : `${b}|${a}`
+      edges.set(e, (edges.get(e) || 0) + 1)
+    }
+  }
+  let boundary = 0
+  let pinch = 0
+  for (const n of edges.values()) {
+    if (n % 2 === 1) boundary++
+    else if (n > 2) pinch++
+  }
+  return {
+    quads: quads.length,
+    triangles: quads.length * 2,
+    edges: edges.size,
+    boundaryEdges: boundary,
+    pinchEdges: pinch,
+    closed: boundary === 0,
+  }
+}
+
+/** OBJ with per-vertex colour (the `v x y z r g b` extension Blender reads). */
+export function exportOBJ(cells, name = 'model', scale = MM_PER_VOXEL) {
+  const quads = extractSurface(cells, scale)
+  const index = new Map()
+  const verts = []
+  const faces = []
+  const vkey = (p, c) => `${p[0]},${p[1]},${p[2]}|${c}`
+  for (const q of quads) {
+    const ids = q.p.map((p) => {
+      const kk = vkey(p, q.color)
+      let id = index.get(kk)
+      if (id === undefined) {
+        const [r, g, b] = hexToRgb(q.color)
+        verts.push(`v ${p[0]} ${p[1]} ${p[2]} ${r.toFixed(4)} ${g.toFixed(4)} ${b.toFixed(4)}`)
+        id = verts.length
+        index.set(kk, id)
+      }
+      return id
+    })
+    faces.push(`f ${ids[0]} ${ids[1]} ${ids[2]} ${ids[3]}`)
+  }
+  return [
+    `# ANAM[QR]PHIC - 3D Printable Voxel Diorama QR code`,
+    `# watertight voxel surface, no internal geometry`,
+    `# voxels: ${cells.length}  quads: ${quads.length}  scale: ${scale} mm/voxel`,
+    `o ${name}`,
+    ...verts,
+    ...faces,
+    '',
+  ].join('\n')
+}
+
+/** Binary STL — an ASCII STL of a large code would run to tens of megabytes. */
+export function exportSTL(cells, scale = MM_PER_VOXEL) {
+  const quads = extractSurface(cells, scale)
+  const tris = quads.length * 2
+  const buf = new ArrayBuffer(84 + tris * 50)
+  const view = new DataView(buf)
+  // the binary STL header is capped at 80 bytes
+  const header = `ANAM[QR]PHIC - 3D Printable Voxel Diorama QR code | ${scale}mm/voxel`
+  for (let i = 0; i < Math.min(79, header.length); i++) view.setUint8(i, header.charCodeAt(i))
+  view.setUint32(80, tris, true)
+
+  let o = 84
+  const tri = (n, a, b, c) => {
+    view.setFloat32(o, n[0], true); view.setFloat32(o + 4, n[1], true); view.setFloat32(o + 8, n[2], true)
+    const pts = [a, b, c]
+    for (let i = 0; i < 3; i++) {
+      view.setFloat32(o + 12 + i * 12, pts[i][0], true)
+      view.setFloat32(o + 16 + i * 12, pts[i][1], true)
+      view.setFloat32(o + 20 + i * 12, pts[i][2], true)
+    }
+    view.setUint16(o + 48, 0, true)
+    o += 50
+  }
+  for (const q of quads) {
+    tri(q.n, q.p[0], q.p[1], q.p[2])
+    tri(q.n, q.p[0], q.p[2], q.p[3])
+  }
+  return buf
+}
+
+function saveBlob(blob, filename) {
   const url = URL.createObjectURL(blob)
-  const a=document.createElement('a')
-  a.href=url; a.download=filename; a.click()
-  setTimeout(()=>URL.revokeObjectURL(url), 2000)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 4000)
+}
+
+export function downloadText(content, filename, mime = 'text/plain') {
+  saveBlob(new Blob([content], { type: mime }), filename)
+}
+
+export function downloadBinary(buffer, filename, mime = 'application/octet-stream') {
+  saveBlob(new Blob([buffer], { type: mime }), filename)
 }

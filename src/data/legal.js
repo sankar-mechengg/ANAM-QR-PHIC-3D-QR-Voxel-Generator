@@ -5,7 +5,7 @@ export const LEGAL_DOCS = {
     updated: '10 September 2026',
     content: `
 **1. Introduction**
-QR Voxel Studio ("Company", "we", "us", "our") is committed to protecting your privacy. This Privacy Policy describes how we collect, use, disclose, and safeguard your information when you use our web application at **qr-voxel.studio** (the "Service"). Please read this policy carefully. If you do not agree with the terms, please do not access the Service.
+Anamqrphic ("Company", "we", "us", "our") is committed to protecting your privacy. This Privacy Policy describes how we collect, use, disclose, and safeguard your information when you use our web application at **anamqrphic.studio** (the "Service"). Please read this policy carefully. If you do not agree with the terms, please do not access the Service.
 
 **2. Information We Collect**
 *2.1 Information you provide*
@@ -48,7 +48,7 @@ If data is transferred outside the EEA, we use Standard Contractual Clauses or a
 - Support correspondence is retained for 3 years or as required by law.
 
 **8. Your Rights (GDPR / CCPA / UK GDPR / CPRA)**
-Depending on your jurisdiction you may have rights to: access, rectify, erase, restrict, object, data portability, and to withdraw consent. California residents may also request "Do Not Sell or Share" (we do not sell) and non-discrimination. To exercise rights, contact privacy@qr-voxel.studio. We will respond within 30 days (45 days for CCPA).
+Depending on your jurisdiction you may have rights to: access, rectify, erase, restrict, object, data portability, and to withdraw consent. California residents may also request "Do Not Sell or Share" (we do not sell) and non-discrimination. To exercise rights, contact privacy@anamqrphic.studio. We will respond within 30 days (45 days for CCPA).
 
 **9. Cookies**
 See our Cookie Policy for details on essential, preference, and analytics cookies and how to manage consent.
@@ -63,9 +63,9 @@ The Service is not directed to children under 16. We do not knowingly collect da
 We will update the "Last updated" date and, for material changes, provide notice via the Service or email.
 
 **13. Contact**
-Data Controller: QR Voxel Studio Pvt. Ltd., 2nd Floor, WeWork Galaxy, MG Road, Bengaluru 560002, India.
-Email: privacy@qr-voxel.studio | DPO: dpo@qr-voxel.studio | Phone: +91-80-XXXX-XXXX
-EU Representative: Voxel EU Rep, 12 Rue de Rivoli, 75001 Paris, France.
+Data Controller: Anamqrphic Labs Pvt. Ltd., 2nd Floor, WeWork Galaxy, MG Road, Bengaluru 560002, India.
+Email: privacy@anamqrphic.studio | DPO: dpo@anamqrphic.studio | Phone: +91-80-XXXX-XXXX
+EU Representative: Anamqrphic EU Rep, 12 Rue de Rivoli, 75001 Paris, France.
 `
   },
   terms: {
@@ -73,7 +73,7 @@ EU Representative: Voxel EU Rep, 12 Rue de Rivoli, 75001 Paris, France.
     updated: '10 September 2026',
     content: `
 **1. Acceptance of Terms**
-By accessing or using QR Voxel Studio (the "Service"), you agree to be bound by these Terms & Conditions ("Terms"). If you disagree, do not use the Service.
+By accessing or using Anamqrphic (the "Service"), you agree to be bound by these Terms & Conditions ("Terms"). If you disagree, do not use the Service.
 
 **2. Eligibility**
 You must be at least 16 years old, or 13 with parental consent where permitted by law, and legally capable of entering a binding contract.
@@ -123,7 +123,7 @@ Governed by laws of India, with courts at Bengaluru having exclusive jurisdictio
 We will post updated Terms with a new effective date and, for material changes, provide 14 days' notice. Continued use constitutes acceptance.
 
 **15. Contact**
-legal@qr-voxel.studio — QR Voxel Studio Pvt. Ltd., Bengaluru, India.
+legal@anamqrphic.studio — Anamqrphic Labs Pvt. Ltd., Bengaluru, India.
 `
   },
   cookies: {
@@ -157,7 +157,7 @@ On first visit, a consent banner allows you to Accept All, Reject Non-Essential,
 **6. Updates**
 We will update this policy if we introduce new categories. Check the "Last updated" date.
 
-**Contact:** privacy@qr-voxel.studio
+**Contact:** privacy@anamqrphic.studio
 `
   },
   consent: {
@@ -184,17 +184,17 @@ If you are under 16, consent must be given or authorized by a holder of parental
 We store a timestamped record of your choice (anonymous ID + selection) for proof of compliance (GDPR Art. 7).
 
 **6. Need Help?**
-privacy@qr-voxel.studio — we respond within 5 business days.
+privacy@anamqrphic.studio — we respond within 5 business days.
 `
   },
   dpa: {
     title: 'Data Processing Agreement (DPA) — Summary',
     updated: '10 September 2026',
     content: `
-This is a summary. The full DPA is available on request (legal@qr-voxel.studio) for enterprise customers.
+This is a summary. The full DPA is available on request (legal@anamqrphic.studio) for enterprise customers.
 
 **1. Roles**
-Customer is Data Controller; QR Voxel Studio Pvt. Ltd. is Data Processor (and sub-processors: hosting, analytics, support).
+Customer is Data Controller; Anamqrphic Labs Pvt. Ltd. is Data Processor (and sub-processors: hosting, analytics, support).
 
 **2. Subject Matter & Duration**
 Processing of content inputs and contact data solely to provide the Service, for the duration of the subscription or use.
@@ -269,7 +269,7 @@ References to Blender, PrusaSlicer, Cura, etc., are nominative and not endorseme
 - TLS 1.3 everywhere, HSTS, CSP, and XSS protections
 - Principle of least privilege, MFA for production access, logged and audited
 - Secrets in vault, encrypted at rest (AES-256)
-- Automated dependency scanning and SAST; responsible disclosure: security@qr-voxel.studio — we acknowledge within 48 hours
+- Automated dependency scanning and SAST; responsible disclosure: security@anamqrphic.studio — we acknowledge within 48 hours
 
 **Compliance**
 - GDPR, UK GDPR, CCPA/CPRA, and India DPDP Act 2023 principles applied globally
@@ -291,21 +291,21 @@ Available under NDA for enterprise: latest pentest summary, SOC 2 report, and ou
     updated: '10 September 2026',
     content: `
 **Provider**
-QR Voxel Studio Pvt. Ltd.
+Anamqrphic Labs Pvt. Ltd.
 2nd Floor, WeWork Galaxy, 43 Residency Road,
 Bengaluru, Karnataka 560025, India
 CIN: U62013KA2025PTCXXXXXX | GSTIN: 29XXXXX1234X1ZX
 Directors: Sankar — contact via LinkedIn
 
 **Contact**
-Email: hello@qr-voxel.studio | Support: support@qr-voxel.studio | Legal: legal@qr-voxel.studio
+Email: hello@anamqrphic.studio | Support: support@anamqrphic.studio | Legal: legal@anamqrphic.studio
 Phone: +91-80-XXXX-XXXX (Mon–Fri, 10:00–18:00 IST)
 
 **EU Representative**
-Voxel EU Rep — 12 Rue de Rivoli, 75001 Paris, France — eu-rep@qr-voxel.studio
+Anamqrphic EU Rep — 12 Rue de Rivoli, 75001 Paris, France — eu-rep@anamqrphic.studio
 
 **Responsible for Content (§18 MStV / IT Act)**
-Sankar — QR Voxel Studio Editorial Team
+Sankar — Anamqrphic Editorial Team
 
 **VAT**
 EU VAT: FR12 345678901 (for EU invoicing where applicable)

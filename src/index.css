@@ -159,66 +159,13 @@ a{color:inherit}
 
 .viewport{
   flex:1; position:relative; display:grid; place-items:center; padding:18px; min-height:420px;
-}
-
-/* 2D QR styles */
-.qr-wrap{
-  position:relative;
-  width:min(420px, 90vw); aspect-ratio:1;
-  border-radius:20px; overflow:hidden;
-  background:#0b0e1a;
-  border:1px solid rgba(255,255,255,0.08);
-  box-shadow: var(--shadow);
-  display:grid; place-items:center;
-  cursor:grab;
-}
-.qr-wrap:active{cursor:grabbing}
-.qr-grid{
-  display:grid; gap:1px; padding:22px; background: white; border-radius:12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  transition: filter .3s;
-}
-.qr-cell{
-  width:100%; height:100%; border-radius:2px;
-  position:relative; transform-style:preserve-3d; transition: transform 600ms cubic-bezier(0.23,1,0.32,1), background 300ms, filter 300ms;
-}
-.qr-cell.dark{
-  background: #0b0f1e;
-}
-.qr-cell.light{
-  background: #ffffff;
-}
-.qr-cell.golden{
-  background: radial-gradient(circle at 30% 30%, #fff7a8, #facc15 40%, #f59e0b 70%, #b45309 100%) !important;
-  box-shadow: 0 0 0 2px rgba(250,204,21,0.6), 0 0 22px rgba(250,204,21,0.9), inset 0 1px 2px rgba(255,255,255,0.8);
-  animation: pulseGold 1.6s infinite alternate;
-  cursor:pointer; z-index:2;
-}
-@keyframes pulseGold{
-  0%{transform:scale(1); filter:brightness(1)}
-  100%{transform:scale(1.08); filter:brightness(1.2)}
-}
-.qr-cell.flip{
-  transform: rotateY(180deg) scale(0.92);
-}
-.qr-overlay{
-  position:absolute; inset:0; display:grid; place-items:center; pointer-events:none;
-}
-.scanline{
-  position:absolute; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, #facc15, transparent);
-  box-shadow:0 0 12px #facc15; opacity:0.6; animation: scan 2.8s linear infinite;
-}
-@keyframes scan{
-  0%{top:12%}
-  100%{top:88%}
-}
-.color-orb{
-  position:absolute; width:220px; height:220px; border-radius:50%; filter:blur(40px); opacity:0.18; pointer-events:none;
-  transition: background 400ms;
+  /* the side panels are taller than the screen, and the stage stretches to match
+     them — cap it so the whole diorama and its tap caption stay above the fold */
+  max-height: calc(100vh - 190px);
 }
 
 /* immersive helper */
-.canvas-container{width:100%; height:100%; min-height:520px}
+.canvas-container{width:100%; height:100%; min-height:420px}
 
 .toolbar{
   display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
@@ -237,18 +184,6 @@ a{color:inherit}
   font-size:12px; color:var(--muted); background:rgba(10,11,16,0.6)
 }
 
-/* floating animate button */
-.canvas-container{position:relative}
-.floating-animate{
-  position:absolute; bottom:18px; right:18px;
-  padding:10px 16px; border-radius:999px; border:1px solid rgba(250,204,21,0.6);
-  background: linear-gradient(135deg, #facc15, #f59e0b); color:#111; font-weight:900; font-size:13px;
-  cursor:pointer; box-shadow:0 10px 30px rgba(250,204,21,0.35), 0 2px 10px rgba(0,0,0,0.4);
-  animation: floatBtn 2s ease-in-out infinite alternate;
-  z-index:5;
-}
-.floating-animate:hover{filter:brightness(1.08); transform:translateY(-1px)}
-@keyframes floatBtn{ from{transform:translateY(0)} to{transform:translateY(-4px)} }
 .rec-badge{
   position:absolute; top:14px; left:50%; transform:translateX(-50%);
   background:#dc2626; color:#fff; padding:6px 14px; border-radius:999px; font-weight:800; font-size:12px;
@@ -351,3 +286,163 @@ a{color:inherit}
 ::-webkit-scrollbar{width:8px; height:8px}
 ::-webkit-scrollbar-thumb{background:#232840; border-radius:999px}
 ::-webkit-scrollbar-track{background:transparent}
+
+/* ---- ANAM[QR]PHIC ---- */
+.brandword{letter-spacing:-0.03em}
+.brandword i{
+  font-style:normal; color:#facc15;
+  text-shadow:0 0 14px rgba(250,204,21,0.45);
+}
+
+/* diorama / 2D grid tabs */
+.view-tabs{
+  display:flex; gap:4px; padding:4px; border-radius:10px;
+  background:#0f1220; border:1px solid var(--border);
+}
+.view-tab{
+  padding:6px 12px; border-radius:7px; border:1px solid transparent; background:transparent;
+  color:var(--muted); cursor:pointer; font-weight:700; font-size:12px; letter-spacing:0.02em;
+  transition:all .15s;
+}
+.view-tab:hover{color:var(--text)}
+.view-tab.active{
+  background:#1e233a; color:var(--text); border-color:var(--border2);
+  box-shadow:0 2px 10px rgba(0,0,0,0.25);
+}
+
+/* "tap the tree to see QR code" caption under the diorama */
+
+
+
+.scene-help{
+  position:absolute; left:12px; top:12px; pointer-events:none;
+  background:rgba(15,18,30,0.7); backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.08);
+  padding:8px 10px; border-radius:10px;
+  font-size:12px; color:#cbd5e1; line-height:1.4;
+  transition:opacity .35s;
+}
+.scene-help b{color:#fff}
+
+
+
+
+/* ---- collapsible side panes ---------------------------------------------- */
+.left, .right { padding: 0; overflow: hidden; min-height: 0; }
+.pane-inner {
+  width: 360px; height: 100%; padding: 18px;
+  overflow-y: auto; overflow-x: hidden;
+}
+.right .pane-inner { width: 320px; }
+@media (min-width: 1101px) {
+  .main { transition: grid-template-columns .3s cubic-bezier(.4, 0, .2, 1); }
+  .main.left-closed { grid-template-columns: 0 1fr 320px; }
+  .main.right-closed { grid-template-columns: 360px 1fr 0; }
+  .main.left-closed.right-closed { grid-template-columns: 0 1fr 0; }
+}
+@media (max-width: 1100px) {
+  .pane-inner, .right .pane-inner { width: 100%; }
+}
+.pane-toggle {
+  flex: none; width: 26px; height: 26px; border-radius: 8px;
+  border: 1px solid var(--border2); background: #1c2136; color: var(--muted);
+  cursor: pointer; font-size: 12px; display: grid; place-items: center; transition: all .15s;
+}
+.pane-toggle:hover { color: #fff; background: #232842; }
+
+/* ---- stage chrome -------------------------------------------------------- */
+.stage-header { gap: 12px; }
+.stage-title { min-width: 0; flex-wrap: wrap; }
+.viewport { max-height: calc(100vh - 205px); }
+.canvas-container { width: 100%; height: 100%; min-height: 380px; position: relative; }
+
+/* docked under the viewport, so nothing ever floats over the code */
+.stage-foot {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 16px; border-top: 1px solid var(--border);
+  background: rgba(10, 12, 20, 0.75); backdrop-filter: blur(8px);
+}
+.foot-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.foot-hint {
+  margin-left: auto; font-size: 12px; color: #94a3b8; cursor: pointer; user-select: none;
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .03); transition: all .15s; white-space: nowrap;
+}
+.foot-hint:hover { color: #facc15; border-color: rgba(250, 204, 21, .4); }
+
+/* ---- palette control: "monochrome" no longer overruns its pill ----------- */
+.segmented { flex-wrap: wrap; }
+.seg-btn {
+  flex: 1 1 auto; min-width: 0; padding: 7px 8px; font-size: 11px;
+  white-space: nowrap; text-transform: capitalize; letter-spacing: -.01em;
+}
+
+/* ---- avatar groups ------------------------------------------------------- */
+.group-title {
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: #64748b; font-weight: 800; margin: 16px 0 8px;
+}
+
+/* ---- printability readout ------------------------------------------------ */
+.print-card {
+  margin-top: 12px; border: 1px solid var(--border); border-radius: 12px;
+  background: #0f1220; padding: 10px 12px; font-size: 12px;
+}
+.print-row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; color: var(--muted); }
+.print-row b { color: #e2e8f0; font-weight: 700; }
+.print-verdict {
+  margin-top: 8px; padding: 8px 10px; border-radius: 9px; font-size: 11.5px; line-height: 1.45;
+}
+.print-verdict.ok { background: rgba(74, 222, 128, .1); border: 1px solid rgba(74, 222, 128, .28); color: #86efac; }
+.print-verdict.bad { background: rgba(248, 113, 113, .1); border: 1px solid rgba(248, 113, 113, .3); color: #fca5a5; }
+.how-card {
+  font-size: 12px; color: #94a3b8; line-height: 1.7;
+  background: #0f1220; border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+}
+.how-card b { color: #e2e8f0; }
+
+/* A canvas carries an intrinsic width, and a `1fr` grid column will not shrink
+   below its content's min-content size — so re-opening a collapsed pane left the
+   viewport stuck at its widest. min-width:0 lets the column give the space back. */
+.main > .left, .main > .right, .main > .stage { min-width: 0; }
+.main.left-closed .left { border-right: none; }
+.main.right-closed .right { border-left: none; }
+/* every ancestor of the canvas needs min-width:0, or the canvas's intrinsic
+   width still props the column open */
+.viewport, .canvas-container { min-width: 0; overflow: hidden; }
+.canvas-container canvas { display: block; max-width: 100%; }
+
+/* ---- panes get their own scrollbars instead of stretching the page -------- */
+@media (min-width: 1101px) {
+  /* Bound the row so .pane-inner has a real height to scroll inside; without
+     this the asides grow to fit 25 avatar cards and the page scrolls instead.
+     `flex: none` matters — with the inherited `flex: 1` the flex algorithm sizes
+     the item from its content and the `height` here is ignored. */
+  .main { flex: none; height: calc(100vh - 56px); min-height: 520px; overflow: hidden; }
+  .stage { height: 100%; overflow: hidden; }
+  .viewport { max-height: none; }
+}
+.pane-inner { overscroll-behavior: contain; scrollbar-gutter: stable; }
+.pane-inner::-webkit-scrollbar { width: 10px; }
+.pane-inner::-webkit-scrollbar-thumb {
+  background: #2b3150; border-radius: 999px;
+  border: 3px solid transparent; background-clip: content-box;
+}
+.pane-inner:hover::-webkit-scrollbar-thumb { background: #3a4166; background-clip: content-box; }
+.pane-inner::-webkit-scrollbar-track { background: transparent; }
+
+/* ---- chosen photo ------------------------------------------------------- */
+.photo-row {
+  display: flex; gap: 10px; align-items: center; margin-top: 10px;
+  border: 1px solid var(--border); background: #0f1220; border-radius: 12px; padding: 8px 10px;
+}
+.photo-thumb {
+  width: 46px; height: 46px; flex: none; border-radius: 8px; object-fit: cover;
+  border: 1px solid var(--border2);
+}
+.photo-row b { display: block; font-size: 12px; color: #e2e8f0; word-break: break-all; }
+.photo-row span { display: block; font-size: 11px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+.corp-sub {
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: #facc15; font-weight: 700; margin-top: 6px;
+}

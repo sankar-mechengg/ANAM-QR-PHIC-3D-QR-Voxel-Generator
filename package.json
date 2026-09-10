@@ -1,5 +1,6 @@
 {
-  "name": "3d-animate-qr-code-generator",
+  "name": "anamqrphic",
+  "description": "ANAM[QR]PHIC - 3D Printable Voxel Diorama QR code",
   "private": true,
   "version": "0.0.0",
   "type": "module",
